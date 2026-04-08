@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Legal Scrutiny Report</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #eef2f7;
+    margin: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap: 10px;
+}
+
+input, select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.doc-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px;
+    width: 100%;
+    background: #007bff;
+    color: white;
+    border: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>Legal Scrutiny Report</h1>
+
+<form method="POST" action="/generate_sale">
+
+<div class="grid">
+<input name="DATE" placeholder="Date">
+<input name="BRANCH_NAME" placeholder="Branch Name">
+<input name="BRANCH_AREA" placeholder="Branch Area">
+<input name="APPLICANT_BOLD_CAPS" placeholder="Applicant Name">
+<input name="APPLICATION_NO" placeholder="Application No">
+</div>
+
+<h3>Property</h3>
+<div class="grid">
+<input name="DOOR_NO" placeholder="Door No">
+<input name="PLOT_NO" placeholder="Plot No">
+<input name="ASSESSMENT_NO" placeholder="Assessment No">
+<input name="EXTENT_YARDS" placeholder="Extent">
+<input name="SURVEY_NO" placeholder="Survey No">
+<input name="ADDRESS" placeholder="Address">
+<input name="VILLAGE" placeholder="Village">
+<input name="GRAM_PANCHAYAT" placeholder="Gram Panchayat">
+<input name="MANDAL" placeholder="Mandal">
+<input name="SRO" placeholder="SRO">
+<input name="RO" placeholder="RO">
+<input name="DISTRICT" placeholder="District">
+</div>
+
+<h3>Documents</h3>
+<div id="documents"></div>
+<button type="button" onclick="addDoc()">Add Document</button>
+
+<h3>Additional</h3>
+<div class="grid">
+<input name="POSSESSION_DATE" placeholder="Possession Date">
+<input name="FROM_YEARS" placeholder="From Years">
+<input name="POSSESSION_NAME" placeholder="Possession Name">
+
+<input name="H_T_DATE" placeholder="House Tax Date">
+<input name="HOUSE_TAX_RECIPT_NO" placeholder="Receipt No">
+<input name="FINANCIAL_YEARS" placeholder="Financial Years">
+<input name="HOUSE_TAX_NAME" placeholder="Tax Name">
+<input name="HOUSE_TAX_ISSUED_BY" placeholder="Issued By">
+
+<input name="EC_DATE" placeholder="EC Date">
+<input name="EC_NO" placeholder="EC No">
+</div>
+
+<button type="submit">Generate Report</button>
+
+</form>
+</div>
+
+<script>
+function addDoc() {
+    let div = document.createElement("div");
+    div.className = "doc-card";
+
+    div.innerHTML = `
+        <div class="grid">
+            <select name="doc_type[]">
+                <option value="Sale">Sale</option>
+                <option value="Gift">Gift</option>
+            </select>
+
+            <input name="doc_number[]" placeholder="Doc No">
+            <input name="doc_date[]" placeholder="Date">
+            <input name="doc_executant[]" placeholder="Executant">
+            <input name="doc_owner[]" placeholder="Owner">
+            <input name="doc_relation[]" placeholder="Relation">
+            <input name="doc_worth[]" placeholder="Amount">
+        </div>
+    `;
+
+    document.getElementById("documents").appendChild(div);
+}
+
+addDoc();
+</script>
+
+</body>
+</html>
