@@ -19,15 +19,16 @@ def generate_sale():
     # -------- BASIC --------
     context = {
         "DATE": request.form.get("DATE"),
-        "BRANCH_NAME": request.form.get("BRANCH_NAME"),
-        "BRANCH_AREA": request.form.get("BRANCH_AREA"),
-        "APPLICANT_BOLD_CAPS": request.form.get("APPLICANT_BOLD_CAPS"),
         "APPLICATION_NO": request.form.get("APPLICATION_NO"),
+        "APPLICANT_NAME": request.form.get("APPLICANT_NAME"),
+        "APPLICANT_BOLD_OWNER": request.form.get("APPLICANT_BOLD_OWNER"),
+        "LOAN_AMOUNT": request.form.get("LOAN_AMOUNT"),
 
         # -------- PROPERTY --------
         "DOOR_NO": request.form.get("DOOR_NO"),
         "PLOT_NO": request.form.get("PLOT_NO"),
         "ASSESSMENT_NO": request.form.get("ASSESSMENT_NO"),
+        "Assessment_No": request.form.get("ASSESSMENT_NO"),  # IMPORTANT (your template uses both)
         "EXTENT_YARDS": request.form.get("EXTENT_YARDS"),
         "SURVEY_NO": request.form.get("SURVEY_NO"),
         "ADDRESS": request.form.get("ADDRESS"),
@@ -37,6 +38,23 @@ def generate_sale():
         "SRO": request.form.get("SRO"),
         "RO": request.form.get("RO"),
         "DISTRICT": request.form.get("DISTRICT"),
+
+        # -------- BOUNDARIES --------
+        "EAST_BOUNDARY": request.form.get("EAST_BOUNDARY"),
+        "WEST_BOUNDARY": request.form.get("WEST_BOUNDARY"),
+        "NORTH_BOUNDARY": request.form.get("NORTH_BOUNDARY"),
+        "SOUTH_BOUNDARY": request.form.get("SOUTH_BOUNDARY"),
+
+        # -------- MEASUREMENTS --------
+        "E_W": request.form.get("E_W"),
+        "N_S": request.form.get("N_S"),
+        "E_W_FEET": request.form.get("E_W_FEET"),
+        "N_S_FEET": request.form.get("N_S_FEET"),
+        "EXTENT_FEET": request.form.get("EXTENT_FEET"),
+
+        # -------- DEED --------
+        "DEED_NO": request.form.get("DEED_NO"),
+        "DEED_DATE": request.form.get("DEED_DATE"),
 
         # -------- EXTRA --------
         "POSSESSION_DATE": request.form.get("POSSESSION_DATE"),
@@ -51,23 +69,23 @@ def generate_sale():
 
         "EC_DATE": request.form.get("EC_DATE"),
         "EC_NO": request.form.get("EC_NO"),
+
+        # -------- ELECTRICITY --------
+        "ELECTRICITY_BILL_DATE": request.form.get("ELECTRICITY_BILL_DATE"),
+        "SERVICE_NO": request.form.get("SERVICE_NO"),
+        "ELECTRICITY_NAME": request.form.get("ELECTRICITY_NAME"),
+
+        # -------- MORTGAGE --------
+        "MORTGAGE_DEED_NO": request.form.get("MORTGAGE_DEED_NO"),
+        "MORTGAGE_DEED_DATE": request.form.get("MORTGAGE_DEED_DATE"),
+        "MORTGAGE_COMPANY": request.form.get("MORTGAGE_COMPANY"),
     }
 
-    # -------- BOOLEAN --------
+    # -------- BOOLEAN FLAGS --------
     context["HAS_ELECTRICITY_BILL"] = request.form.get("HAS_ELECTRICITY_BILL") == "true"
     context["HAS_MORTGAGE"] = request.form.get("HAS_MORTGAGE") == "true"
 
-    # -------- ELECTRICITY --------
-    context["ELECTRICITY_BILL_DATE"] = request.form.get("ELECTRICITY_BILL_DATE")
-    context["SERVICE_NO"] = request.form.get("SERVICE_NO")
-    context["ELECTRICITY_NAME"] = request.form.get("ELECTRICITY_NAME")
-
-    # -------- MORTGAGE --------
-    context["MORTGAGE_DEED_NO"] = request.form.get("MORTGAGE_DEED_NO")
-    context["MORTGAGE_DEED_DATE"] = request.form.get("MORTGAGE_DEED_DATE")
-    context["MORTGAGE_COMPANY"] = request.form.get("MORTGAGE_COMPANY")
-
-    # -------- DOCUMENTS --------
+    # -------- DOCUMENTS (DYNAMIC) --------
     documents = []
 
     types = request.form.getlist("doc_type[]")
@@ -79,7 +97,7 @@ def generate_sale():
     worths = request.form.getlist("doc_worth[]")
 
     for i in range(len(types)):
-        # Safe check (IMPORTANT)
+        # STRICT VALIDATION (no empty junk rows)
         if types[i] and numbers[i] and dates[i]:
             documents.append({
                 "type": types[i],
