@@ -5,6 +5,10 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+# -------- BASE PATH (CRITICAL FIX) --------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates_docx")
+
 
 # ---------------- HOME ----------------
 @app.route("/")
@@ -28,7 +32,7 @@ def generate_sale():
         "DOOR_NO": request.form.get("DOOR_NO"),
         "PLOT_NO": request.form.get("PLOT_NO"),
         "ASSESSMENT_NO": request.form.get("ASSESSMENT_NO"),
-        "Assessment_No": request.form.get("ASSESSMENT_NO"),  # IMPORTANT (your template uses both)
+        "Assessment_No": request.form.get("ASSESSMENT_NO"),
         "EXTENT_YARDS": request.form.get("EXTENT_YARDS"),
         "SURVEY_NO": request.form.get("SURVEY_NO"),
         "ADDRESS": request.form.get("ADDRESS"),
@@ -70,12 +74,11 @@ def generate_sale():
         "EC_DATE": request.form.get("EC_DATE"),
         "EC_NO": request.form.get("EC_NO"),
 
-        # -------- ELECTRICITY --------
+        # -------- OPTIONAL --------
         "ELECTRICITY_BILL_DATE": request.form.get("ELECTRICITY_BILL_DATE"),
         "SERVICE_NO": request.form.get("SERVICE_NO"),
         "ELECTRICITY_NAME": request.form.get("ELECTRICITY_NAME"),
 
-        # -------- MORTGAGE --------
         "MORTGAGE_DEED_NO": request.form.get("MORTGAGE_DEED_NO"),
         "MORTGAGE_DEED_DATE": request.form.get("MORTGAGE_DEED_DATE"),
         "MORTGAGE_COMPANY": request.form.get("MORTGAGE_COMPANY"),
@@ -85,7 +88,7 @@ def generate_sale():
     context["HAS_ELECTRICITY_BILL"] = request.form.get("HAS_ELECTRICITY_BILL") == "true"
     context["HAS_MORTGAGE"] = request.form.get("HAS_MORTGAGE") == "true"
 
-    # -------- DOCUMENTS (DYNAMIC) --------
+    # -------- DOCUMENTS --------
     documents = []
 
     types = request.form.getlist("doc_type[]")
@@ -97,7 +100,6 @@ def generate_sale():
     worths = request.form.getlist("doc_worth[]")
 
     for i in range(len(types)):
-        # STRICT VALIDATION (no empty junk rows)
         if types[i] and numbers[i] and dates[i]:
             documents.append({
                 "type": types[i],
@@ -111,13 +113,19 @@ def generate_sale():
 
     context["DOCUMENTS"] = documents
 
-    # -------- LOAD TEMPLATE --------
-    doc = DocxTemplate("templates_docx/tyger_report.docx")
+    # -------- TEMPLATE PATH (FIXED) --------
+    template_path = os.path.join(TEMPLATE_DIR, "tyger_report.docx")
+
+    if not os.path.exists(template_path):
+        return f"Template not found at: {template_path}", 500
+
+    doc = DocxTemplate(template_path)
     doc.render(context)
 
-    # -------- SAVE FILE --------
+    # -------- SAVE OUTPUT --------
     filename = f"report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx"
-    output_path = os.path.join("templates_docx", filename)
+    output_path = os.path.join(TEMPLATE_DIR, filename)
+
     doc.save(output_path)
 
     # -------- DOWNLOAD --------
